@@ -1,0 +1,14 @@
+openssl genrsa -aes256 -out myRootCA.key 4096
+openssl req -x509 -new -nodes -key myRootCA.key -sha256 -days 1824 -out myRootCA.crt
+
+
+openssl req -new -nodes -out sitelocale.csr -newkey rsa:4096 -keyout sitelocale.key
+
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.site.local
+
+openssl x509 -req -in /mnt/SSL/sitelocale.csr -CA myRootCA.crt -CAkey myRootCA.key -CAcreateserial -out /mnt/SSL/sitelocale.crt -days 730 -sha256 -extfile /mnt/SSL/sitelocale.v3.ext
